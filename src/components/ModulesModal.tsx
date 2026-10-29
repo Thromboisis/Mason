@@ -18,7 +18,9 @@ import {
   Paintbrush,
   Box,
   Compass,
-  Server
+  Server,
+  Shield,
+  Layers
 } from 'lucide-react';
 
 interface ModulesModalProps {
@@ -85,28 +87,14 @@ export const ModulesModal: React.FC<ModulesModalProps> = ({
 
             const renderModalModuleIcon = () => {
               switch (mod.iconName) {
-                case 'Paintbrush':
-                  return <Paintbrush size={22} />;
-                case 'Map':
-                  return <Map size={22} />;
-                case 'TreePine':
-                  return <TreePine size={22} />;
-                case 'Users':
-                  return <Users size={22} />;
-                case 'Sliders':
-                  return <Sliders size={22} />;
-                case 'Network':
-                  return <Network size={22} />;
-                case 'Sparkles':
-                  return <Sparkles size={22} />;
+                case 'Shield':
+                  return <Shield size={22} />;
+                case 'Layers':
+                  return <Layers size={22} />;
                 case 'Box':
                   return <Box size={22} />;
-                case 'Compass':
-                  return <Compass size={22} />;
-                case 'Server':
-                  return <Server size={22} />;
                 default:
-                  return <Map size={22} />;
+                  return <Box size={22} />;
               }
             };
 

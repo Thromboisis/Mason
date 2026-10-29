@@ -22,7 +22,10 @@ import {
   Gamepad2,
   Sword,
   Skull,
-  Crown
+  Crown,
+  Shield,
+  Box,
+  Globe
 } from 'lucide-react';
 import { ProjectIndexItem } from '../utils/masonStorage';
 import { MASON_MODULES } from '../engine/modulesRegistry';
@@ -301,20 +304,16 @@ export const MasonWelcomeLauncher: React.FC<MasonWelcomeLauncherProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {MASON_MODULES.map(m => {
               const modColor = getModuleColorDef(m.id);
 
               const renderWelcomeIcon = () => {
                 switch (m.iconName) {
-                  case 'Paintbrush': return <Paintbrush size={16} />;
-                  case 'Map': return <Map size={16} />;
-                  case 'TreePine': return <TreePine size={16} />;
-                  case 'Users': return <Users size={16} />;
-                  case 'Sparkles': return <Sparkles size={16} />;
-                  case 'Sliders': return <Sliders size={16} />;
-                  case 'Network': return <Network size={16} />;
-                  default: return <Map size={16} />;
+                  case 'Shield': return <Shield size={16} />;
+                  case 'Layers': return <Layers size={16} />;
+                  case 'Box': return <Box size={16} />;
+                  default: return <Box size={16} />;
                 }
               };
 

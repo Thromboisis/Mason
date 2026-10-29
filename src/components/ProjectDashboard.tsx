@@ -28,7 +28,11 @@ import {
   Unlock,
   Cloud,
   RefreshCw,
-  ChevronRight
+  ChevronRight,
+  Shield,
+  Box,
+  Globe,
+  Play
 } from 'lucide-react';
 import { releaseProjectLock, FileLockInfo } from '../utils/linkedSaveTarget';
 import { RemoteChangedFilesModal } from './RemoteChangedFilesModal';
@@ -89,28 +93,14 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
     setIsEditingMetadata(false);
   };
 
-  const mapCount = project.fileSystem?.maps?.length || 0;
-  const biomeCount = project.fileSystem?.biomes?.length || 0;
-  const prefabCount = project.fileSystem?.prefabs?.length || 0;
-  const particleCount = project.fileSystem?.particles?.length || 0;
-  const uiCount = project.fileSystem?.ui?.length || 0;
-  const gameCount = project.fileSystem?.game?.length || 0;
-  const spriteCount = project.fileSystem?.sprites?.length || 0;
-  const imageCount = project.fileSystem?.images?.length || 0;
+  // Core 3-Module Colors & Metrics
+  const mainSceneColor = getModuleColorDef('main_scene');
+  const subScenesColor = getModuleColorDef('sub_scenes');
+  const objectsColor = getModuleColorDef('objects');
 
-  const currentMapFile = project.fileSystem?.maps?.find(m => m.fileName === project.activeFiles?.mapFileName) || project.fileSystem?.maps?.[0];
-  const activeMapName = currentMapFile?.name || 'World Level Map';
-
-  const totalFiles = mapCount + biomeCount + prefabCount + particleCount + uiCount + gameCount + spriteCount + imageCount;
-
-  // Module color definitions
-  const spritesColor = getModuleColorDef('sprites');
-  const mapsColor = getModuleColorDef('maps');
-  const biomesColor = getModuleColorDef('biomes');
-  const prefabsColor = getModuleColorDef('prefabs');
-  const particlesColor = getModuleColorDef('particles');
-  const uiColor = getModuleColorDef('ui');
-  const gameColor = getModuleColorDef('gamestructure');
+  const subSceneCount = project.fileSystem?.scenes3d?.length || project.fileSystem?.maps?.length || 1;
+  const objectCount = project.fileSystem?.prefabs?.length || project.fileSystem?.models3d?.length || 1;
+  const totalFiles = 1 + subSceneCount + objectCount;
 
   return (
     <div 
@@ -402,340 +392,115 @@ export const ProjectDashboard: React.FC<ProjectDashboardProps> = ({
         )}
       </div>
 
-      {/* Module Overview Cards - Vertical stack: Upper Right Number, Icon -> Extension -> Module Name */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3.5 w-full mx-auto">
-        {/* Image Editor */}
-        <div 
-          onClick={() => onLaunchModule('sprites')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = spritesColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Image & Sprite Studio (.sprite)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-right font-mono group-hover:scale-105 transition-transform">
-            <div className="text-lg font-black text-white">{spriteCount}</div>
-            {imageCount > 0 && (
-              <div className="text-[10px] text-amber-400 font-bold">{imageCount} png</div>
-            )}
+      {/* Streamlined 3-Tier Core Architecture (Main Scene, Sub-Scenes, Objects) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              Core Architecture & Gameplay Foundation
+            </h3>
+            <p className="text-xs text-neutral-400">
+              Streamlined 3-module model: 1 Persistent Main Scene, isolated Sub-Scenes (1 loaded at a time), and Component-based Objects.
+            </p>
           </div>
 
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${spritesColor.rgb}, 0.2)`,
-              borderColor: `rgba(${spritesColor.rgb}, 0.4)`,
-              color: spritesColor.hex
-            }}
+          <button
+            type="button"
+            onClick={() => onLaunchModule('main_scene')}
+            className="text-xs text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 transition"
           >
-            <Paintbrush size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${spritesColor.rgb}, 0.15)`,
-              borderColor: `rgba(${spritesColor.rgb}, 0.3)`,
-              color: spritesColor.hex
-            }}
-          >
-            .sprite
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Image Editor
-          </div>
+            <Shield size={13} />
+            <span>Launch Main Scene</span>
+            <ChevronRight size={13} />
+          </button>
         </div>
 
-        {/* Maps */}
-        <div 
-          onClick={() => onLaunchModule('maps')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = mapsColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Maps (.map)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {mapCount}
-          </div>
-
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${mapsColor.rgb}, 0.2)`,
-              borderColor: `rgba(${mapsColor.rgb}, 0.4)`,
-              color: mapsColor.hex
-            }}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          {/* 1. Main Scene */}
+          <div
+            onClick={() => onLaunchModule('main_scene')}
+            className="p-4 rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 via-neutral-900 to-neutral-950 hover:border-amber-500 transition cursor-pointer group shadow-lg flex flex-col justify-between"
           >
-            <Map size={20} />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                  <Globe size={18} />
+                </div>
+                <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md uppercase">
+                  Root Scene
+                </span>
+              </div>
+              <h4 className="text-sm font-bold text-white mt-3 group-hover:text-amber-300 transition-colors">
+                Main Scene
+              </h4>
+              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                Persistent root orchestrator: Splash screens, Start menu, Settings, Save/Load slots, Persistent HUD & Fray UI, and 3D world coordinates.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] text-amber-400 font-medium">
+              <span>Sub-Scene Orchestrator</span>
+              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </div>
           </div>
 
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${mapsColor.rgb}, 0.15)`,
-              borderColor: `rgba(${mapsColor.rgb}, 0.3)`,
-              color: mapsColor.hex
-            }}
+          {/* 2. Sub-Scenes */}
+          <div
+            onClick={() => onLaunchModule('sub_scenes')}
+            className="p-4 rounded-2xl border border-cyan-500/40 bg-gradient-to-br from-cyan-500/10 via-neutral-900 to-neutral-950 hover:border-cyan-500 transition cursor-pointer group shadow-lg flex flex-col justify-between"
           >
-            .map
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Maps
-          </div>
-        </div>
-
-        {/* Biomes */}
-        <div 
-          onClick={() => onLaunchModule('biomes')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = biomesColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Biomes (.biome)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {biomeCount}
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                  <Layers size={18} />
+                </div>
+                <span className="text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-md uppercase">
+                  Containers
+                </span>
+              </div>
+              <h4 className="text-sm font-bold text-white mt-3 group-hover:text-cyan-300 transition-colors">
+                Sub-Scenes
+              </h4>
+              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                Containers for actual gameplay spaces (Ashen Outpost, Ruined Sanctum). Holds placed 3D objects; strictly 1 active at runtime.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] text-cyan-400 font-medium">
+              <span>Level & Object Placement</span>
+              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </div>
           </div>
 
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${biomesColor.rgb}, 0.2)`,
-              borderColor: `rgba(${biomesColor.rgb}, 0.4)`,
-              color: biomesColor.hex
-            }}
+          {/* 3. Objects */}
+          <div
+            onClick={() => onLaunchModule('objects')}
+            className="p-4 rounded-2xl border border-purple-500/40 bg-gradient-to-br from-purple-500/10 via-neutral-900 to-neutral-950 hover:border-purple-500 transition cursor-pointer group shadow-lg flex flex-col justify-between"
           >
-            <TreePine size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${biomesColor.rgb}, 0.15)`,
-              borderColor: `rgba(${biomesColor.rgb}, 0.3)`,
-              color: biomesColor.hex
-            }}
-          >
-            .biome
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Biomes
-          </div>
-        </div>
-
-        {/* Prefabs */}
-        <div 
-          onClick={() => onLaunchModule('prefabs')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = prefabsColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Prefabs (.prefab)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {prefabCount}
-          </div>
-
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${prefabsColor.rgb}, 0.2)`,
-              borderColor: `rgba(${prefabsColor.rgb}, 0.4)`,
-              color: prefabsColor.hex
-            }}
-          >
-            <Users size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${prefabsColor.rgb}, 0.15)`,
-              borderColor: `rgba(${prefabsColor.rgb}, 0.3)`,
-              color: prefabsColor.hex
-            }}
-          >
-            .prefab
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Prefabs
-          </div>
-        </div>
-
-        {/* Particles */}
-        <div 
-          onClick={() => onLaunchModule('particles')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = particlesColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Particles (.particle)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {particleCount}
-          </div>
-
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${particlesColor.rgb}, 0.2)`,
-              borderColor: `rgba(${particlesColor.rgb}, 0.4)`,
-              color: particlesColor.hex
-            }}
-          >
-            <Sparkles size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${particlesColor.rgb}, 0.15)`,
-              borderColor: `rgba(${particlesColor.rgb}, 0.3)`,
-              color: particlesColor.hex
-            }}
-          >
-            .particle
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Particles
-          </div>
-        </div>
-
-        {/* UI & HUD */}
-        <div 
-          onClick={() => onLaunchModule('ui')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = uiColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="UI & HUD (.ui)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {uiCount}
-          </div>
-
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${uiColor.rgb}, 0.2)`,
-              borderColor: `rgba(${uiColor.rgb}, 0.4)`,
-              color: uiColor.hex
-            }}
-          >
-            <Sliders size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${uiColor.rgb}, 0.15)`,
-              borderColor: `rgba(${uiColor.rgb}, 0.3)`,
-              color: uiColor.hex
-            }}
-          >
-            .ui
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            UI & HUD
-          </div>
-        </div>
-
-        {/* Game Architecture */}
-        <div 
-          onClick={() => onLaunchModule('gamestructure')}
-          className="relative p-4 rounded-2xl border transition cursor-pointer group flex flex-col items-start text-left shadow-lg hover:scale-[1.02]"
-          style={{
-            backgroundColor: bgDef.cardHex,
-            borderColor: bgDef.borderHex
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = gameColor.hex)}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = bgDef.borderHex)}
-          title="Game Architecture (.gamestructure)"
-        >
-          {/* Upper Right Number */}
-          <div className="absolute top-3.5 right-3.5 text-lg font-black text-white font-mono group-hover:scale-105 transition-transform">
-            {gameCount}
-          </div>
-
-          {/* 1. Module Icon */}
-          <div 
-            className="w-10 h-10 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform mb-2 shadow-inner"
-            style={{
-              backgroundColor: `rgba(${gameColor.rgb}, 0.2)`,
-              borderColor: `rgba(${gameColor.rgb}, 0.4)`,
-              color: gameColor.hex
-            }}
-          >
-            <Network size={20} />
-          </div>
-
-          {/* 2. Extension */}
-          <span 
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border mb-2"
-            style={{
-              backgroundColor: `rgba(${gameColor.rgb}, 0.15)`,
-              borderColor: `rgba(${gameColor.rgb}, 0.3)`,
-              color: gameColor.hex
-            }}
-          >
-            .gamestructure
-          </span>
-
-          {/* 3. Module Name */}
-          <div className="text-[11px] font-bold text-neutral-400 group-hover:text-neutral-200 truncate mt-1 w-full transition-colors">
-            Game Architecture
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                  <Box size={18} />
+                </div>
+                <span className="text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-md uppercase">
+                  Entity-Graph
+                </span>
+              </div>
+              <h4 className="text-sm font-bold text-white mt-3 group-hover:text-purple-300 transition-colors">
+                Objects
+              </h4>
+              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                Build objects starting with an Empty 3D Object. Attach components (Meshes, Sprites, Colliders, Fray Loadouts) and visual Logic Graphs.
+              </p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] text-purple-400 font-medium">
+              <span>Components & Functions</span>
+              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </div>
           </div>
         </div>
       </div>
+
+
 
       {/* Project Kanban & Task Board Section */}
       <ProjectTaskBoard

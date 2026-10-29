@@ -60,8 +60,10 @@ import {
   Zap, 
   User, 
   Search,
-  CheckCircle2
+  CheckCircle2,
+  Compass
 } from 'lucide-react';
+import { VoxelStudioView } from '../engine/voxel/VoxelStudioView';
 
 interface TerrainStudioProps {
   project: MasonProject;
@@ -106,7 +108,7 @@ export const TerrainStudio: React.FC<TerrainStudioProps> = ({
   const [brushStrength, setBrushStrength] = useState<number>(0.6);
   const [targetPlateauHeight, setTargetPlateauHeight] = useState<number>(8);
   const [activeVoxelMat, setActiveVoxelMat] = useState<string>('stone');
-  const [activeTab, setActiveTab] = useState<'sculpt' | 'material' | 'scatter' | 'props'>('sculpt');
+  const [activeTab, setActiveTab] = useState<'sculpt' | 'material' | 'scatter' | 'props' | 'voxel_engine'>('sculpt');
   const [isTestWalkMode, setIsTestWalkMode] = useState<boolean>(false);
   const [showWireframe, setShowWireframe] = useState<boolean>(false);
   const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -884,6 +886,21 @@ export const TerrainStudio: React.FC<TerrainStudioProps> = ({
 
           <button
             type="button"
+            onClick={() => setActiveTab(prev => prev === 'voxel_engine' ? 'sculpt' : 'voxel_engine')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+              activeTab === 'voxel_engine'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-lg shadow-emerald-950/60 ring-2 ring-emerald-400/30'
+                : 'bg-neutral-800 hover:bg-neutral-700 text-emerald-400 border-emerald-500/30'
+            }`}
+            title="Switch to Drop-In Replacement Smooth Voxel Engine (0.25m LOD 0, Surface Nets + QEF, Enshrouded DC)"
+          >
+            <Flame size={13} className="text-emerald-300" />
+            <span>Smooth Voxel Engine</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">0.25m DC</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleSave}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50"
             title="Save Terrain (Ctrl+S)"
@@ -895,11 +912,16 @@ export const TerrainStudio: React.FC<TerrainStudioProps> = ({
       </header>
 
       {/* ==========================================
-          THREE-COLUMN WORKSPACE
+          THREE-COLUMN WORKSPACE OR SMOOTH VOXEL ENGINE
           ========================================== */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* LEFT PANEL: SCULPT BRUSH SETTINGS & OBJECTS */}
-        <aside className="w-76 bg-neutral-900/80 border-r border-neutral-800 flex flex-col shrink-0 z-20">
+      {activeTab === 'voxel_engine' ? (
+        <div className="flex-1 flex overflow-hidden relative">
+          <VoxelStudioView onClose={() => setActiveTab('sculpt')} />
+        </div>
+      ) : (
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* LEFT PANEL: SCULPT BRUSH SETTINGS & OBJECTS */}
+          <aside className="w-76 bg-neutral-900/80 border-r border-neutral-800 flex flex-col shrink-0 z-20">
           <div className="flex border-b border-neutral-800 p-1 bg-neutral-950">
             <button
               type="button"
@@ -1171,6 +1193,7 @@ export const TerrainStudio: React.FC<TerrainStudioProps> = ({
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

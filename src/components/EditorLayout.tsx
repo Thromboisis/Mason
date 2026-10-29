@@ -94,7 +94,8 @@ import {
   Undo2,
   Redo2,
   Zap,
-  Skull
+  Skull,
+  Shield
 } from 'lucide-react';
 import { RefinedBiome } from '../engine/refinedBiomeSchema';
 import { TileShape, TILE_SHAPE_DEFINITIONS } from '../engine/tileShape';
@@ -1639,17 +1640,10 @@ export const EditorLayout: React.FC = () => {
 
                     const renderModIcon = () => {
                       switch (mod.iconName) {
-                        case 'Paintbrush': return <Paintbrush size={16} />;
-                        case 'Map': return <Map size={16} />;
-                        case 'TreePine': return <TreePine size={16} />;
-                        case 'Users': return <Users size={16} />;
-                        case 'Sliders': return <Sliders size={16} />;
-                        case 'Network': return <Network size={16} />;
-                        case 'Sparkles': return <Sparkles size={16} />;
+                        case 'Shield': return <Shield size={16} />;
+                        case 'Layers': return <Layers size={16} />;
                         case 'Box': return <Box size={16} />;
-                        case 'Compass': return <Compass size={16} />;
-                        case 'Server': return <Server size={16} />;
-                        default: return <Map size={16} />;
+                        default: return <Box size={16} />;
                       }
                     };
 
